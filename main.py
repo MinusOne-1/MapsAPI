@@ -3,16 +3,15 @@
 
 import os
 import sys
+
 import requests
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QWidget
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QLabel
-from PIL import Image
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel
 
 
-class MyMap(QWidget):
+class MyMap(QMainWindow):
     def __init__(self):
         super().__init__()
         self.x, self.y, self.masht = '37.530887', '55.703118', '0.002'
@@ -24,6 +23,7 @@ class MyMap(QWidget):
         self.map_request = ['http://static-maps.yandex.ru/1.x/?ll=', self.x, ',',
                             self.y, '&spn=', self.masht, ',', self.masht, '&l=', self.vid]
         self.setImageToPixmap()
+        self.setSelfFocus()
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_PageUp:
@@ -32,9 +32,39 @@ class MyMap(QWidget):
                 self.setImageToPixmap()
             except FloatingPointError as e:
                 print(e)
-        elif event.key() == Qt.Key_PageDown:
+        if event.key() == Qt.Key_PageDown:
             try:
                 self.mashtab.setPlainText(str(float(self.mashtab.toPlainText()) - 0.01))
+                self.setImageToPixmap()
+            except FloatingPointError as e:
+                print(e)
+        if event.key() == Qt.Key_Up:
+            print(2)
+            try:
+                self.edit_y.setPlainText(str(float(self.edit_y.toPlainText()) -
+                                             2 * float(self.mashtab.toPlainText())))
+                self.setImageToPixmap()
+            except FloatingPointError as e:
+                print(e)
+        if event.key() == Qt.Key_Down:
+            print(1)
+            try:
+                self.edit_y.setPlainText(str(float(self.edit_y.toPlainText()) +
+                                             2 * float(self.mashtab.toPlainText())))
+                self.setImageToPixmap()
+            except FloatingPointError as e:
+                print(e)
+        if event.key() == Qt.Key_Right:
+            try:
+                self.edit_x.setPlainText(str(float(self.edit_x.toPlainText()) +
+                                             2 * float(self.mashtab.toPlainText())))
+                self.setImageToPixmap()
+            except FloatingPointError as e:
+                print(e)
+        if event.key() == Qt.Key_Left:
+            try:
+                self.edit_x.setPlainText(str(float(self.edit_x.toPlainText()) -
+                                             2 * float(self.mashtab.toPlainText())))
                 self.setImageToPixmap()
             except FloatingPointError as e:
                 print(e)
@@ -52,7 +82,6 @@ class MyMap(QWidget):
         self.map_request = ['http://static-maps.yandex.ru/1.x/?ll=', self.x, ',',
                             self.y, '&spn=', self.masht, ',', self.masht, '&l=', self.vid]
         self.map_request_str = ''.join(self.map_request)
-        print(self.map_request_str)
         response = requests.get(self.map_request_str)
         if not response:
             return str('Ошибка выполнения запроса:' + '\n' + 'Http статус:' +
@@ -78,6 +107,11 @@ class MyMap(QWidget):
             self.image.setText(is_all_secc)
             win = WarningWindow(self, is_all_secc)
             win.show()
+        self.setSelfFocus()
+
+    def setSelfFocus(self):
+        print('Focus Setted')
+        self.setFocusPolicy(Qt.StrongFocus)
 
     def closeEvent(self, event):
         """При закрытии формы подчищаем за собой"""
