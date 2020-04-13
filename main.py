@@ -20,12 +20,17 @@ class MyMap(QMainWindow):
         uic.loadUi('1.ui', self)
         self.pushButton.clicked.connect(self.setImageToPixmap)
         self.pushButton_2.clicked.connect(self.search)
+        self.del_ask.clicked.connect(self.delAskMethod)
         # 37.530887, 55.703118
         self.map_request_str = ''
         self.map_request = ['http://static-maps.yandex.ru/1.x/?ll=', self.x, ',',
                             self.y, '&spn=', self.masht, ',', self.masht, '&l=', self.vid]
         self.setImageToPixmap()
         self.setSelfFocus()
+
+    def delAskMethod(self):
+        self.metcy_and_over['pt='] = []
+        self.setImageToPixmap()
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_PageUp:
