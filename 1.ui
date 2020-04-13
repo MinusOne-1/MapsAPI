@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>954</width>
-    <height>609</height>
+    <height>637</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,7 +46,7 @@
     <property name="geometry">
      <rect>
       <x>620</x>
-      <y>130</y>
+      <y>222</y>
       <width>321</width>
       <height>308</height>
      </rect>
@@ -231,7 +231,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>730</x>
-      <y>450</y>
+      <y>542</y>
       <width>111</width>
       <height>41</height>
      </rect>
@@ -249,7 +249,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>672</x>
-      <y>78</y>
+      <y>170</y>
       <width>220</width>
       <height>41</height>
      </rect>
@@ -261,6 +261,34 @@ p, li { white-space: pre-wrap; }
     </property>
     <property name="text">
      <string>Сбросить поисковый запрос</string>
+    </property>
+   </widget>
+   <widget class="QPlainTextEdit" name="ask_info">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>100</y>
+      <width>301</width>
+      <height>61</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>75</y>
+      <width>191</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Информация по запросу:</string>
     </property>
    </widget>
   </widget>
