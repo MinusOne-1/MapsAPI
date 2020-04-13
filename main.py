@@ -30,6 +30,8 @@ class MyMap(QMainWindow):
 
     def delAskMethod(self):
         self.metcy_and_over['pt='] = []
+        self.ask_info.setPlainText('')
+        self.ask.setPlainText('')
         self.setImageToPixmap()
 
     def keyPressEvent(self, event):
@@ -88,6 +90,7 @@ class MyMap(QMainWindow):
             toponym_coodrinates = toponym["Point"]["pos"]
             # Печатаем извлечённые из ответа поля:
             print(toponym_address, "имеет координаты:", toponym_coodrinates)
+            self.ask_info.setPlainText(toponym_address)
             self.metcy_and_over['pt='].append(
                 (toponym_coodrinates.split()[0] + ',', toponym_coodrinates.split()[1] + ',', 'pmdol1'))
             self.edit_x.setPlainText(toponym_coodrinates.split()[0])
