@@ -16,8 +16,10 @@ class MyMap(QMainWindow):
         super().__init__()
         self.x, self.y, self.masht = '37.530887', '55.703118', '0.002'
         self.vid = 'map'
+        self.metcy_and_over = {'pt=': []}
         uic.loadUi('1.ui', self)
         self.pushButton.clicked.connect(self.setImageToPixmap)
+        self.pushButton_2.clicked.connect(self.search)
         # 37.530887, 55.703118
         self.map_request_str = ''
         self.map_request = ['http://static-maps.yandex.ru/1.x/?ll=', self.x, ',',
@@ -39,35 +41,64 @@ class MyMap(QMainWindow):
             except FloatingPointError as e:
                 print(e)
         if event.key() == Qt.Key_Up:
-            print(2)
             try:
-                self.edit_y.setPlainText(str(float(self.edit_y.toPlainText()) -
-                                             2 * float(self.mashtab.toPlainText())))
+                self.edit_y.setPlainText(str(float(self.edit_y.toPlainText()) +
+                                             (1 / 2) * float(self.mashtab.toPlainText())))
                 self.setImageToPixmap()
             except FloatingPointError as e:
                 print(e)
         if event.key() == Qt.Key_Down:
-            print(1)
             try:
-                self.edit_y.setPlainText(str(float(self.edit_y.toPlainText()) +
-                                             2 * float(self.mashtab.toPlainText())))
+                self.edit_y.setPlainText(str(float(self.edit_y.toPlainText()) -
+                                             (1 / 2) * float(self.mashtab.toPlainText())))
                 self.setImageToPixmap()
             except FloatingPointError as e:
                 print(e)
         if event.key() == Qt.Key_Right:
             try:
                 self.edit_x.setPlainText(str(float(self.edit_x.toPlainText()) +
-                                             2 * float(self.mashtab.toPlainText())))
+                                             1 * float(self.mashtab.toPlainText())))
                 self.setImageToPixmap()
             except FloatingPointError as e:
                 print(e)
         if event.key() == Qt.Key_Left:
             try:
                 self.edit_x.setPlainText(str(float(self.edit_x.toPlainText()) -
-                                             2 * float(self.mashtab.toPlainText())))
+                                             1 * float(self.mashtab.toPlainText())))
                 self.setImageToPixmap()
             except FloatingPointError as e:
                 print(e)
+
+    def search(self):
+        self.metcy_and_over['pt='] = []
+        response = requests.get(
+            "http://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode=" + self.ask.text() + "&format=json")
+        if response:
+            # Запрос успешно выполнен, печатаем полученные данные.
+            json_response = response.json()
+            toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+            # Полный адрес топонима:
+            toponym_address = toponym["metaDataProperty"]["GeocoderMetaData"]["text"]
+            # Координаты центра топонима:
+            toponym_coodrinates = toponym["Point"]["pos"]
+            # Печатаем извлечённые из ответа поля:
+            print(toponym_address, "имеет координаты:", toponym_coodrinates)
+            self.metcy_and_over['pt='].append(
+                (toponym_coodrinates.split()[0] + ',', toponym_coodrinates.split()[1] + ',', 'pmdol1'))
+            self.edit_x.setPlainText(toponym_coodrinates.split()[0])
+            self.edit_y.setPlainText(toponym_coodrinates.split()[1])
+            self.setImageToPixmap()
+        else:
+            # Произошла ошибка выполнения запроса. Обрабатываем http-статус.
+            print("Ошибка выполнения запроса:")
+            print("Http статус:", response.status_code, "(", response.reason, ")")
+            return -1
+
+    def addMetcyToMap(self):
+        res = ''
+        if self.metcy_and_over['pt='] != []:
+            res += '&pt=' + ''.join(list(map(''.join, self.metcy_and_over['pt='])))
+        return res
 
     def getImage(self):
         self.x = self.edit_x.toPlainText().strip()
@@ -81,7 +112,7 @@ class MyMap(QMainWindow):
             self.vid = 'skl'
         self.map_request = ['http://static-maps.yandex.ru/1.x/?ll=', self.x, ',',
                             self.y, '&spn=', self.masht, ',', self.masht, '&l=', self.vid]
-        self.map_request_str = ''.join(self.map_request)
+        self.map_request_str = ''.join(self.map_request) + self.addMetcyToMap()
         response = requests.get(self.map_request_str)
         if not response:
             return str('Ошибка выполнения запроса:' + '\n' + 'Http статус:' +
@@ -110,7 +141,6 @@ class MyMap(QMainWindow):
         self.setSelfFocus()
 
     def setSelfFocus(self):
-        print('Focus Setted')
         self.setFocusPolicy(Qt.StrongFocus)
 
     def closeEvent(self, event):
