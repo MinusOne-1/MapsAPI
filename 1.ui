@@ -325,7 +325,7 @@ p, li { white-space: pre-wrap; }
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QCheckBox" name="checkBox_2">
+      <widget class="QCheckBox" name="adress">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -341,7 +341,7 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="checkBox">
+      <widget class="QCheckBox" name="post_indx">
        <property name="font">
         <font>
          <pointsize>12</pointsize>
