@@ -31,7 +31,7 @@ class MyMap(QMainWindow):
     def delAskMethod(self):
         self.metcy_and_over['pt='] = []
         self.ask_info.setPlainText('')
-        self.ask.setPlainText('')
+        self.ask.setText('')
         self.setImageToPixmap()
 
     def keyPressEvent(self, event):
@@ -80,6 +80,7 @@ class MyMap(QMainWindow):
         self.metcy_and_over['pt='] = []
         response = requests.get(
             "http://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode=" + self.ask.text() + "&format=json")
+        print("http://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode=" + self.ask.text() + "&format=json")
         if response:
             # Запрос успешно выполнен, печатаем полученные данные.
             json_response = response.json()
@@ -90,7 +91,23 @@ class MyMap(QMainWindow):
             toponym_coodrinates = toponym["Point"]["pos"]
             # Печатаем извлечённые из ответа поля:
             print(toponym_address, "имеет координаты:", toponym_coodrinates)
-            self.ask_info.setPlainText(toponym_address)
+            self.ask_info.setPlainText('Адрес: ' + toponym_address)
+            code = False
+            postal_code = 'не найден'
+            try:
+                postal_code = toponym["metaDataProperty"]["GeocoderMetaData"]['Address']['postal_code']
+                code = True
+            except:
+                code = False
+            if self.post_indx.isChecked():
+                if code:
+                    print('Почтовый индекс: ', postal_code)
+                    self.ask_info.setPlainText('Адрес: ' + toponym_address +
+                                               '\n Почтовый индекс: ' + postal_code)
+                else:
+                    print('Почтовый индекс: не найден')
+                    self.ask_info.setPlainText('Адрес: ' + toponym_address +
+                                               '\n Почтовый индекс: ' + postal_code)
             self.metcy_and_over['pt='].append(
                 (toponym_coodrinates.split()[0] + ',', toponym_coodrinates.split()[1] + ',', 'pmdol1'))
             self.edit_x.setPlainText(toponym_coodrinates.split()[0])
