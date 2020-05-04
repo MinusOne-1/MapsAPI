@@ -20,6 +20,7 @@ class MyMap(QMainWindow):
         uic.loadUi('1.ui', self)
         self.pushButton.clicked.connect(self.setImageToPixmap)
         self.pushButton_2.clicked.connect(self.search)
+        self.post_indx.clicked.connect(self.search)
         self.del_ask.clicked.connect(self.delAskMethod)
         # 37.530887, 55.703118
         self.map_request_str = ''
@@ -80,7 +81,8 @@ class MyMap(QMainWindow):
         self.metcy_and_over['pt='] = []
         response = requests.get(
             "http://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode=" + self.ask.text() + "&format=json")
-        print("http://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode=" + self.ask.text() + "&format=json")
+        print(
+            "http://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode=" + self.ask.text() + "&format=json")
         if response:
             # Запрос успешно выполнен, печатаем полученные данные.
             json_response = response.json()
