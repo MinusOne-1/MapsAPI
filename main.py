@@ -8,7 +8,7 @@ import requests
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel
+from PyQt5.QtWidgets import QLabel, QApplication, QMainWindow
 
 
 class MyMap(QMainWindow):
@@ -18,6 +18,7 @@ class MyMap(QMainWindow):
         self.vid = 'map'
         self.metcy_and_over = {'pt=': []}
         uic.loadUi('1.ui', self)
+        self.image.installEventFilter(self)
         self.pushButton.clicked.connect(self.setImageToPixmap)
         self.pushButton_2.clicked.connect(self.search)
         self.post_indx.clicked.connect(self.search)
@@ -34,6 +35,13 @@ class MyMap(QMainWindow):
         self.ask_info.setPlainText('')
         self.ask.setText('')
         self.setImageToPixmap()
+
+    def eventFilter(self, obj, e):
+        if obj == self.image and e.type() == 2:
+            temp = list(map(int, str(e.pos()).split('(')[1][:-1].split(',')))
+            print(temp)
+            self.searchByMapClick(temp)
+        return super(QMainWindow, self).eventFilter(obj, e)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_PageUp:
@@ -76,6 +84,16 @@ class MyMap(QMainWindow):
                 self.setImageToPixmap()
             except FloatingPointError as e:
                 print(e)
+
+    def searchByMapClick(self, coords_mouse):
+        x_size, y_size = (float(self.mashtab.toPlainText()) / self.image.width(),
+                          float(self.mashtab.toPlainText()) / self.image.height())
+        new_ask = ','.join((str((float(self.edit_x.toPlainText()) - float(self.mashtab.toPlainText())) -
+                                x_size * (coords_mouse[0] - 10)),
+                            str((float(self.edit_y.toPlainText()) - float(self.mashtab.toPlainText())) -
+                                y_size * (coords_mouse[1] - 10))))
+        self.ask.setText(str(new_ask))
+        self.search()
 
     def search(self):
         self.metcy_and_over['pt='] = []
