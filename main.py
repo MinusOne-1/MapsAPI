@@ -40,7 +40,7 @@ class MyMap(QMainWindow):
         if obj == self.image and e.type() == 2:
             temp = list(map(int, str(e.pos()).split('(')[1][:-1].split(',')))
             print(temp)
-            self.searchByMapClick(temp)
+            self.searchByOrganization(temp)
         return super(QMainWindow, self).eventFilter(obj, e)
 
     def keyPressEvent(self, event):
@@ -94,6 +94,52 @@ class MyMap(QMainWindow):
                                 y_size * (coords_mouse[1] - 10))))
         self.ask.setText(str(new_ask))
         self.search()
+
+    def searchByOrganization(self, coords_mouse):
+        x_size, y_size = (float(self.mashtab.toPlainText()) / self.image.width(),
+                          float(self.mashtab.toPlainText()) / self.image.height())
+        new_ask = ','.join((str((float(self.edit_x.toPlainText()) - float(self.mashtab.toPlainText())) -
+                                x_size * (coords_mouse[0] - 10)),
+                            str((float(self.edit_y.toPlainText()) - float(self.mashtab.toPlainText())) -
+                                y_size * (coords_mouse[1] - 10))))
+        self.ask.setText(str(new_ask))
+        search_api_server = "https://search-maps.yandex.ru/v1/"
+        api_key = "dda3ddba-c9ea-4ead-9010-f43fbc15c6e3"
+
+        search_params = {
+            "apikey": api_key,
+            "text": "о",
+            "lang": "ru_RU",
+            "ll": new_ask,
+            "type": "biz"
+        }
+
+        response = requests.get(search_api_server, params=search_params)
+        if not response:
+            print('нет запроса:' + response.url)
+            return
+        json_response = response.json()
+        try:
+            # Получаем первую найденную организацию.
+            organization = json_response["features"][0]
+            # Название организации.
+            org_name = organization["properties"]["CompanyMetaData"]["name"]
+            # Адрес организации.
+            org_address = organization["properties"]["CompanyMetaData"]["address"]
+
+            # Получаем координаты ответа.
+            point = organization["geometry"]["coordinates"]
+            org_point = "{0},{1}".format(point[0], point[1])
+            delta = "0.005"
+            self.mashtab.setPlainText(delta)
+
+            self.edit_x.setPlainText(point[0])
+            self.edit_y.setPlainText(point[1])
+            self.ask_info.setPlainText(
+                f'Название организации: {org_name}\nАдресс организации: {org_address}\nКоординаты организации: {org_point}')
+            self.setImageToPixmap()
+        except:
+            self.ask_info.setPlainText('Нет организации')
 
     def search(self):
         self.metcy_and_over['pt='] = []
