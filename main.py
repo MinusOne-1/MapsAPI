@@ -4,7 +4,7 @@ from io import BytesIO
 import requests
 from PIL import Image
 
-from Functions import takeParametersForTheMapScale
+from Functions import takeParametersForTheMapScale_GEO, findSomethingAround, takeParametersForTheMapScale_SEARCH
 
 # Этот класс поможет нам сделать картинку из потока байт
 
@@ -28,7 +28,10 @@ if not response:
     pass
 
 # получаем параметры для заданного объекта.
-map_params = takeParametersForTheMapScale(response)
+map_params = takeParametersForTheMapScale_GEO(response)
+response_find_something = findSomethingAround(map_params['ll'], 'аптека')
+print(response_find_something)
+map_params = takeParametersForTheMapScale_SEARCH(response_find_something[0], response_find_something[1], 10)
 
 map_api_server = "http://static-maps.yandex.ru/1.x/"
 # ... и выполняем запрос
