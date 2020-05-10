@@ -31,7 +31,7 @@ if not response:
 map_params = takeParametersForTheMapScale_GEO(response)
 response_find_something = findSomethingAround(map_params['ll'], 'аптека')
 print(response_find_something)
-map_params = takeParametersForTheMapScale_SEARCH(response_find_something[0], response_find_something[1])
+map_params = takeParametersForTheMapScale_SEARCH(response_find_something[0], response_find_something[1], 10)
 
 map_api_server = "http://static-maps.yandex.ru/1.x/"
 # ... и выполняем запрос
